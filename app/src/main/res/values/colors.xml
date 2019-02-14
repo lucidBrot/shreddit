@@ -6,6 +6,6 @@
 
 	<color name="black_overlay">#66000000</color>
 	<color name="original_blue">#0099cc</color>
-	<color name="original_violet">#631A70</color>
+	<color name="violet">#631A70</color>
 	<color name="original_text_blue">#33b5e5</color>
 </resources>
