@@ -130,7 +130,10 @@ public class HandleTextIntentActivity extends Activity {
 		if(matcher.find()){
 			String url = matcher.group(1);
 			Log.d("actualllyProcessHTML", "Url: "+url);
-			String actualUrl = "https://external-preview.redd.it"+url;
+			String actualUrl = "https://external-preview.redd.it"+url.substring(0, url.length()-1).replace("&amp;", "&");
+			if (actualUrl.endsWith("&quot;)")){
+				actualUrl = actualUrl.substring(0, actualUrl.length()- "&quot;)".length());
+			}
 			getImage(actualUrl);
 		} else {
 			Log.d("actualllyProcessHTML","Failerinod to parse");
@@ -145,8 +148,13 @@ public class HandleTextIntentActivity extends Activity {
 		}
 	}
 
-	private void showImage(Bitmap image) {
-		((ImageView) findViewById(R.id.imageview)).setImageBitmap(image);
+	private void showImage(final Bitmap image) {
+		runOnUiThread((new Runnable() {
+			@Override
+			public void run() {
+				((ImageView) findViewById(R.id.imageview)).setImageBitmap(image);
+			}
+		}));
 	}
 
 	public Bitmap getBitmapFromURL(String src) {
