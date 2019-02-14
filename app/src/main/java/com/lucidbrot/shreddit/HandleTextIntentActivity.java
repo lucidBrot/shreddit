@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -17,6 +20,8 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -145,7 +150,56 @@ public class HandleTextIntentActivity extends Activity {
 		Bitmap image = getBitmapFromURL(sharedText);
 		if (image != null) {
 			showImage(image);
+			shareImage(image);
 		}
+	}
+
+	private void shareImage(final Bitmap image) {
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				Uri uri = saveImage(image);
+				shareImageUri(uri);
+			}
+		};
+		new Thread(r).start();
+	}
+
+	/**
+	 * Saves the image as PNG to the app's cache directory.
+	 * @param image Bitmap to save.
+	 * @return Uri of the saved file or null
+	 */
+	private Uri saveImage(Bitmap image) {
+		//TODO - Should be processed in another thread
+		File imagesFolder = new File(getCacheDir(), "images");
+		Uri uri = null;
+		try {
+			imagesFolder.mkdirs();
+			File file = new File(imagesFolder, "shared_image.png");
+
+			FileOutputStream stream = new FileOutputStream(file);
+			image.compress(Bitmap.CompressFormat.PNG, 90, stream);
+			stream.flush();
+			stream.close();
+			uri = FileProvider.getUriForFile(this, "com.mydomain.fileprovider", file);
+
+		} catch (IOException e) {
+			Log.d("saveImage", "IOException while trying to write file for sharing: " + e.getMessage());
+		}
+		return uri;
+	}
+
+	/**
+	 * Shares the PNG image from Uri.
+	 * @param uri Uri of image to share.
+	 */
+	private void shareImageUri(Uri uri){
+		Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+		intent.putExtra(Intent.EXTRA_STREAM, uri);
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		intent.setType("image/png");
+		startActivity(intent);
 	}
 
 	private void showImage(final Bitmap image) {
