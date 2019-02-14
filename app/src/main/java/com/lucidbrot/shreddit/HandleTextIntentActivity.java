@@ -142,6 +142,12 @@ public class HandleTextIntentActivity extends Activity {
 			getImage(actualUrl);
 		} else {
 			Log.d("actualllyProcessHTML","Failerinod to parse");
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(rootView.getContext(), "Failed to parse", Toast.LENGTH_SHORT).show();
+				}
+			});
 		}
 	}
 
