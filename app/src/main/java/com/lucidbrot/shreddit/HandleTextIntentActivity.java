@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HandleTextIntentActivity extends Activity {
 
@@ -92,6 +94,7 @@ public class HandleTextIntentActivity extends Activity {
 					public void processHTML(String html) {
 						// process the html as needed by the app
 						Log.d("js tag","le html: "+html);
+						actualllyProcessHTML(html);
 					}
 				}
 
@@ -119,8 +122,23 @@ public class HandleTextIntentActivity extends Activity {
 		});
 	}
 
+	private void actualllyProcessHTML(String html) {
+		// https://external-preview.redd.it/kmeBt8R6jt4X-Zhio7K8BbzvHhvowyxYy2IrjaVpBMU.jpg?auto=webp&amp;s=17c5a4da7d2d691e376cfee07c6cb17e6716f6ea"/>
+		//Pattern pattern = Pattern.compile("https://external-preview.redd.it/(.*?)/");
+		Pattern pattern = Pattern.compile("https://external\\-preview\\.redd\\.it(.*?)\"");
+		Matcher matcher = pattern.matcher(html);
+		if(matcher.find()){
+			String url = matcher.group(1);
+			Log.d("actualllyProcessHTML", "Url: "+url);
+			String actualUrl = "https://external-preview.redd.it"+url;
+			getImage(actualUrl);
+		} else {
+			Log.d("actualllyProcessHTML","Failerinod to parse");
+		}
+	}
+
 	private void getImage(String sharedText) {
-		Log.d("getImage", "got to here");
+		Log.d("getImage", "got to here, using url: "+sharedText);
 		Bitmap image = getBitmapFromURL(sharedText);
 		if (image != null) {
 			showImage(image);
