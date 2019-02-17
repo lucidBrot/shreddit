@@ -134,20 +134,33 @@ public class HandleTextIntentActivity extends Activity {
 		Matcher matcher = pattern.matcher(html);
 		if(matcher.find()){
 			String url = matcher.group(1);
-			Log.d("actualllyProcessHTML", "Url: "+url);
+			Log.d("actualllyProcessHTML", "external Url: "+url);
 			String actualUrl = "https://external-preview.redd.it"+url.substring(0, url.length()-1).replace("&amp;", "&");
 			if (actualUrl.endsWith("&quot;)")){
 				actualUrl = actualUrl.substring(0, actualUrl.length()- "&quot;)".length());
 			}
 			getImage(actualUrl);
 		} else {
-			Log.d("actualllyProcessHTML","Failerinod to parse");
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(rootView.getContext(), "Failed to parse", Toast.LENGTH_SHORT).show();
-				}
-			});
+			pattern = Pattern.compile("https://preview\\.redd\\.it(.*?)\"");
+			matcher = pattern.matcher(html);
+			if (matcher.find()){
+                String url = matcher.group(1);
+                Log.d("actualllyProcessHTML", "internal Url: "+url);
+                String actualUrl = "https://preview.redd.it"+url.substring(0, url.length()-1).replace("&amp;", "&");
+                if (actualUrl.endsWith("&quot;)")){
+                    actualUrl = actualUrl.substring(0, actualUrl.length()- "&quot;)".length());
+                }
+                getImage(actualUrl);
+            } else {
+                // fail
+                Log.d("actualllyProcessHTML", "Failerinod to parse");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(rootView.getContext(), "Failed to parse", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 		}
 	}
 

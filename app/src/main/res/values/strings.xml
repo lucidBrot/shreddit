@@ -5,4 +5,5 @@
 	<string name="dummy_content">DUMMY\nCONTENT</string>
 	<string name="main_bg_text">shreddit</string>
 	<string name="main_bg_text_small">share reddit</string>
+    <string name="please_be_patient_this_app_is_slow_and_it_knows_it">Please be Patient. This app is slow, and it knows it.</string>
 </resources>
