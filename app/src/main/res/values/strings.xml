@@ -6,4 +6,9 @@
 	<string name="main_bg_text">shreddit</string>
 	<string name="main_bg_text_small">share reddit</string>
     <string name="please_be_patient_this_app_is_slow_and_it_knows_it">Please be Patient. This app is slow, and it knows it.</string>
+	<string name="nothing_received">Did not receive anything I could work with.</string>
+	<string name="received_intent">Received Intent</string>
+	<string name="found_image_url">Found image url</string>
+	<string name="handling_intent">Handling Intent</string>
+	<string name="loading_page">Loading page</string>
 </resources>

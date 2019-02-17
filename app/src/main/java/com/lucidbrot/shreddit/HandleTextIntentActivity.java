@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,6 +19,8 @@ import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -33,14 +36,17 @@ import java.util.regex.Pattern;
 public class HandleTextIntentActivity extends Activity {
 
 	private View rootView;
+	private ProgressBar progressBar;
+	private TextView infotext;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_handletextintent);
 		rootView = findViewById(R.id.rootviewlul);
-
-		Log.d("onCreate", "got to here");
+		progressBar = findViewById(R.id.progress_bar);
+		infotext = findViewById(R.id.infotext);
+        progressBar.setProgress(0, true);
 
 		// Get intent, action and MIME type
 		final Intent intent = getIntent();
@@ -58,7 +64,13 @@ public class HandleTextIntentActivity extends Activity {
 				};
 				Thread t = new Thread(runnable);
 				t.start();
+				infotext.setText(getString(R.string.received_intent));
+				progressBar.setProgress(20, true);
 			}
+		} else {
+			infotext.setText(getString(R.string.nothing_received));
+            progressBar.setProgress(0, false);
+            rootView.setBackground(new ColorDrawable(getColor(R.color.errorcolor)));
 		}
 	}
 
@@ -67,6 +79,9 @@ public class HandleTextIntentActivity extends Activity {
 		Log.d("handleSendText", "got to here with url " + sharedText);
 		if (sharedText != null) {
 			// Update UI to reflect text being shared
+            infotext.setText(getString(R.string.handling_intent));
+            progressBar.setProgress(40, true);
+
 			if (URLUtil.isValidUrl(sharedText)) {
 				if (isImageUrl(sharedText)) {
 					Log.d("handleSendText", "got to here  A");
@@ -99,6 +114,13 @@ public class HandleTextIntentActivity extends Activity {
 					public void processHTML(String html) {
 						// process the html as needed by the app
 						Log.d("js tag","le html: "+html);
+						rootView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                infotext.setText("Received HTML");
+                                progressBar.setProgress(80, true);
+                            }
+                        });
 						actualllyProcessHTML(html);
 					}
 				}
@@ -125,6 +147,14 @@ public class HandleTextIntentActivity extends Activity {
 
 			}
 		});
+
+		runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                infotext.setText(getString(R.string.loading_page));
+                progressBar.setProgress(60, true);
+            }
+        });
 	}
 
 	private void actualllyProcessHTML(String html) {
@@ -166,6 +196,14 @@ public class HandleTextIntentActivity extends Activity {
 
 	private void getImage(String sharedText) {
 		Log.d("getImage", "got to here, using url: "+sharedText);
+		rootView.post(new Runnable() {
+            @Override
+            public void run() {
+                infotext.setText(getString(R.string.found_image_url));
+                progressBar.setProgress(90, true);
+            }
+        });
+
 		Bitmap image = getBitmapFromURL(sharedText);
 		if (image != null) {
 			showImage(image);
@@ -226,6 +264,8 @@ public class HandleTextIntentActivity extends Activity {
 			@Override
 			public void run() {
 				((ImageView) findViewById(R.id.imageview)).setImageBitmap(image);
+				progressBar.setVisibility(View.GONE);
+				infotext.setVisibility(View.GONE);
 			}
 		}));
 	}
@@ -255,6 +295,9 @@ public class HandleTextIntentActivity extends Activity {
 			@Override
 			public void run() {
 				Toast.makeText(activity, "is not image url: " + sharedText, Toast.LENGTH_SHORT).show();
+				rootView.setBackground(new ColorDrawable(getColor(R.color.errorcolor)));
+				infotext.setText("There is no image.");
+				progressBar.setProgress(0, false);
 			}
 		});
 	}

@@ -42,6 +42,7 @@
             android:text="@string/main_bg_text_small"/>
 
         <TextView
+            android:id="@+id/infotext"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ellipsize="none"
@@ -50,10 +51,12 @@
             android:text="@string/please_be_patient_this_app_is_slow_and_it_knows_it"/>
 
         <ProgressBar
+            android:id="@+id/progress_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="?android:attr/progressBarStyleHorizontal"
-            android:progressTint="@color/colorPrimaryDark"/>
+            android:progressTint="@color/colorPrimaryDark"
+            />
     </LinearLayout>
 
 </LinearLayout>

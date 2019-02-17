@@ -9,4 +9,5 @@
 	<color name="violet">#631A70</color>
 	<color name="original_text_blue">#33b5e5</color>
 	<color name="pinkbright">#CC0DC3</color>
+    <color name="errorcolor">#970319</color>
 </resources>
