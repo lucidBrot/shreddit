@@ -18,7 +18,9 @@ import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -264,8 +266,16 @@ public class HandleTextIntentActivity extends Activity {
 			@Override
 			public void run() {
 				((ImageView) findViewById(R.id.imageview)).setImageBitmap(image);
+                ((LinearLayout) findViewById(R.id.imgview_wrapper_linlayout)).setVisibility(View.VISIBLE);
 				progressBar.setVisibility(View.GONE);
 				infotext.setVisibility(View.GONE);
+
+                ((Button) findViewById(R.id.reshare_btn)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        shareImage(image);
+                    }
+                });
 			}
 		}));
 	}

@@ -11,4 +11,5 @@
 	<string name="found_image_url">Found image url</string>
 	<string name="handling_intent">Handling Intent</string>
 	<string name="loading_page">Loading page</string>
+	<string name="reshare">reshare</string>
 </resources>
