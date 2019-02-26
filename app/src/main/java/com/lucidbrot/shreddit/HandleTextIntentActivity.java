@@ -8,14 +8,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.URLUtil;
-import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -32,6 +30,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,6 +83,14 @@ public class HandleTextIntentActivity extends Activity {
             infotext.setText(getString(R.string.handling_intent));
             progressBar.setProgress(40, true);
 
+            // get from cache if available
+            Optional<Bitmap> cachedBitmap = UglyCachingSingleton.getInstance().getCachedBitmapForInitialUrl(sharedText);
+            if (cachedBitmap.isPresent()){
+                showImage(cachedBitmap.get());
+                Log.d("Caching", "Loaded image from initial url cache");
+                return;
+            }
+
 			if (URLUtil.isValidUrl(sharedText)) {
 				if (isImageUrl(sharedText)) {
 					Log.d("handleSendText", "got to here  A");
@@ -123,7 +130,7 @@ public class HandleTextIntentActivity extends Activity {
                                 progressBar.setProgress(80, true);
                             }
                         });
-						actualllyProcessHTML(html);
+						actualllyProcessHTML(html, url);
 					}
 				}
 
@@ -159,7 +166,7 @@ public class HandleTextIntentActivity extends Activity {
         });
 	}
 
-	private void actualllyProcessHTML(String html) {
+	private void actualllyProcessHTML(String html, String initialUrl) {
 		// https://external-preview.redd.it/kmeBt8R6jt4X-Zhio7K8BbzvHhvowyxYy2IrjaVpBMU.jpg?auto=webp&amp;s=17c5a4da7d2d691e376cfee07c6cb17e6716f6ea"/>
 		//Pattern pattern = Pattern.compile("https://external-preview.redd.it/(.*?)/");
 		Pattern pattern = Pattern.compile("https://external\\-preview\\.redd\\.it(.*?)\"");
@@ -171,6 +178,7 @@ public class HandleTextIntentActivity extends Activity {
 			if (actualUrl.endsWith("&quot;)")){
 				actualUrl = actualUrl.substring(0, actualUrl.length()- "&quot;)".length());
 			}
+            UglyCachingSingleton.getInstance().setCachedImageUrlForInitialUrl(initialUrl, actualUrl);
 			getImage(actualUrl);
 		} else {
 			pattern = Pattern.compile("https://preview\\.redd\\.it(.*?)\"");
@@ -182,6 +190,7 @@ public class HandleTextIntentActivity extends Activity {
                 if (actualUrl.endsWith("&quot;)")){
                     actualUrl = actualUrl.substring(0, actualUrl.length()- "&quot;)".length());
                 }
+                UglyCachingSingleton.getInstance().setCachedImageUrlForInitialUrl(initialUrl, actualUrl);
                 getImage(actualUrl);
             } else {
                 // fail
@@ -206,8 +215,15 @@ public class HandleTextIntentActivity extends Activity {
             }
         });
 
-		Bitmap image = getBitmapFromURL(sharedText);
+		Bitmap image = UglyCachingSingleton.getInstance().getCachedBitmapForImageUrl(sharedText).orElse(null);
+		if (image==null){
+		    image = getBitmapFromURL(sharedText);
+        } else {
+            Log.d("Caching", "Loaded image from initial url cache");
+        }
+
 		if (image != null) {
+            UglyCachingSingleton.getInstance().setCachedBitmapForImageUrl(sharedText, image);
 			showImage(image);
 			shareImage(image);
 		}
@@ -320,8 +336,12 @@ public class HandleTextIntentActivity extends Activity {
 		catch (IOException e) {
 			e.printStackTrace();
 			Log.e("isImageUrl", "Failed to fetch " + url);
+			return false;
 		}
 		String contentType = connection.getHeaderField("Content-Type");
+		if (contentType==null){
+		    return false;
+        }
 		boolean isImage = contentType.startsWith("image/");
 		return isImage;
 	}
