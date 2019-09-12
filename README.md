@@ -22,3 +22,10 @@ If you want to share an image from reddit to a different app, like Telegram, Wha
 If you want to share a meme with friends, reddit requires you to instead download the image, then share it. Shreddit does that for you, without adding the image to your gallery:
 
 ![shreddit shared](./docs/shreddit2.jpg)
+
+## Antifeatures
+* Parsing HTML with RegEx ✓ 
+* Spawning several threads for no real reason ✓ 
+* Avoiding function names that say what they actually do ✓ 
+* Maintainability × 
+* Performance = O(human) ✓ 
