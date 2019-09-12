@@ -173,9 +173,22 @@ public class HandleTextIntentActivity extends Activity {
 
 	private void actualllyProcessHTML(String html, String initialUrl) {
 		// https://external-preview.redd.it/kmeBt8R6jt4X-Zhio7K8BbzvHhvowyxYy2IrjaVpBMU.jpg?auto=webp&amp;s=17c5a4da7d2d691e376cfee07c6cb17e6716f6ea"/>
-		//Pattern pattern = Pattern.compile("https://external-preview.redd.it/(.*?)/");
-		Pattern pattern = Pattern.compile("https://external\\-preview\\.redd\\.it(.*?)\"");
+		// href="https://i.redd.it/asdfg.jpg
+		Pattern pattern = Pattern.compile("href=\\\"https://i\\.redd\\.it/(.*?)\\\"");
 		Matcher matcher = pattern.matcher(html);
+		if (matcher.find()){
+			String url = matcher.group(1);
+			String actualUrl = "https://i.redd.it/"+url.replace("&amp;", "&");
+			if (actualUrl.endsWith("&quot;)")){
+				actualUrl = actualUrl.substring(0, actualUrl.length()- "&quot;)".length());
+			}
+			UglyCachingSingleton.getInstance().setCachedImageUrlForInitialUrl(initialUrl, actualUrl);
+			getImage(actualUrl);
+			return; // new version
+		}
+
+		// legacy code that should totally be removed if the code should be maintainable or anything
+		pattern = Pattern.compile("https://external\\-preview\\.redd\\.it(.*?)\"");
 		if(matcher.find()){
 			String url = matcher.group(1);
 			Log.d("actualllyProcessHTML", "external Url: "+url);
