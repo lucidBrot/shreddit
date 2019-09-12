@@ -31,6 +31,7 @@ public class FullscreenActivity extends AppCompatActivity {
 	 * and a change of the status and navigation bar.
 	 */
 	private static final int UI_ANIMATION_DELAY = 300;
+	private static final boolean AUTOLAUNCH_DEBUG = false;
 	private final Handler mHideHandler = new Handler();
 	private View mContentView;
 	private final Runnable mHidePart2Runnable = new Runnable() {
@@ -107,9 +108,12 @@ public class FullscreenActivity extends AppCompatActivity {
 		// while interacting with the UI.
 		findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
-		Intent debugIntent = new Intent(FullscreenActivity.this, HandleTextIntentActivity.class);
-		debugIntent.putExtra("debuglink", "https://www.reddit.com/r/dankmemes/comments/d3678s/sneaky/?utm_medium=android_app&utm_source=share");
-		FullscreenActivity.this.startActivity(debugIntent);
+		// autolaunch debug image
+		if (AUTOLAUNCH_DEBUG) {
+			Intent debugIntent = new Intent(FullscreenActivity.this, HandleTextIntentActivity.class);
+			debugIntent.putExtra("debuglink", "https://www.reddit.com/r/dankmemes/comments/d3678s/sneaky/?utm_medium=android_app&utm_source=share");
+			FullscreenActivity.this.startActivity(debugIntent);
+		}
 
 	}
 
