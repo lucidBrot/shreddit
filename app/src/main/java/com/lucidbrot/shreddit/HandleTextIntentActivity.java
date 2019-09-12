@@ -72,6 +72,11 @@ public class HandleTextIntentActivity extends Activity {
 			infotext.setText(getString(R.string.nothing_received));
             progressBar.setProgress(0, false);
             rootView.setBackground(new ColorDrawable(getColor(R.color.errorcolor)));
+
+			String debuglink = intent.getStringExtra("debuglink");
+            if(debuglink != null){
+            	loadImagePageHTML(debuglink);
+			}
 		}
 	}
 

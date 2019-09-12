@@ -1,6 +1,7 @@
 package com.lucidbrot.shreddit;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -105,6 +106,10 @@ public class FullscreenActivity extends AppCompatActivity {
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
 		findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+		Intent debugIntent = new Intent(FullscreenActivity.this, HandleTextIntentActivity.class);
+		debugIntent.putExtra("debuglink", "https://www.reddit.com/r/dankmemes/comments/d3678s/sneaky/?utm_medium=android_app&utm_source=share");
+		FullscreenActivity.this.startActivity(debugIntent);
 
 	}
 
