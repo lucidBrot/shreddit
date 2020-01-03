@@ -29,3 +29,8 @@ If you want to share a meme with friends, reddit requires you to instead downloa
 * Avoiding function names that say what they actually do ✓ 
 * Maintainability × 
 * Performance = O(human) ✓ 
+
+## Contributing
+
+Feel free to contribute, I'm happy to review your PR!
+By Contributing, you place all your work under MIT.
